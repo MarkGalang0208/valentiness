@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Valentine’s Letter 💌</title>
+
+  <style>
+    :root{
+      --bg1:#fff1f5;
+      --bg2:#ffe3ec;
+      --pink1:#ff6fa6;
+      --pink2:#ff4f97;
+      --pink3:#ff9bc3;
+      --red:#d61f3c;
+      --red2:#b0162f;
+      --paper:#fff7fb;
+      --ink:#3b2b35;
+      --leaf1:#7be2ab;
+      --leaf2:#2ea96d;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: radial-gradient(circle at 20% 10%, var(--bg2), var(--bg1) 45%, #ffffff 100%);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      overflow:hidden;
+    }
+
+    .sparkles{
+      position:fixed; inset:0;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(255,79,151,.18) 0 2px, transparent 3px),
+        radial-gradient(circle at 70% 30%, rgba(214,31,60,.12) 0 2px, transparent 3px),
+        radial-gradient(circle at 35% 80%, rgba(255,111,166,.15) 0 2px, transparent 3px),
+        radial-gradient(circle at 85% 75%, rgba(255,155,195,.18) 0 2px, transparent 3px);
+      pointer-events:none;
+      filter: blur(.2px);
+      opacity:.7;
+      z-index:0;
+    }
+
+    .scene{
+      width:min(980px, 92vw);
+      height:min(640px, 82vh);
+      position:relative;
+      display:grid;
+      place-items:center;
+      z-index:1;
+    }
+
+    /* Music UI */
+    .music{
+      position:fixed;
+      top:14px;
+      right:14px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      z-index:50;
+      user-select:none;
+    }
+    .music button{
+      border:none;
+      padding:10px 12px;
+      border-radius:12px;
+      background: rgba(214,31,60,.10);
+      color: rgba(214,31,60,.95);
+      font-weight:800;
+      cursor:pointer;
+      box-shadow: 0 12px 20px rgba(0,0,0,.10);
+    }
+    .music button:hover{ background: rgba(214,31,60,.16); }
+    .music small{
+      color: rgba(59,43,53,.75);
+      font-weight:600;
+      background: rgba(255,255,255,.65);
+      padding:8px 10px;
+      border-radius:12px;
+      backdrop-filter: blur(6px);
+    }
+
+    /* Floating hearts */
+    .hearts{ position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:4; }
+    .heart{
+      position:absolute;
+      width:16px; height:16px;
+      transform: rotate(45deg);
+      opacity:.85;
+      animation: floatUp linear infinite;
+      filter: drop-shadow(0 6px 6px rgba(0,0,0,.08));
+    }
+    .heart::before, .heart::after{
+      content:"";
+      position:absolute;
+      width:16px; height:16px;
+      border-radius:50%;
+      background: rgba(255,79,151,.75);
+    }
+    .heart{ background: rgba(255,79,151,.75); }
+    .heart::before{ left:-8px; top:0; }
+    .heart::after{ left:0; top:-8px; }
+    @keyframes floatUp{
+      0%{ transform: translateY(40px) rotate(45deg) scale(.8); opacity:0; }
+      10%{ opacity:.9; }
+      100%{ transform: translateY(-780px) rotate(45deg) scale(1.15); opacity:0; }
+    }
+
+    /* Falling petals */
+    .petals{ position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:2; }
+    .petal{
+      position:absolute;
+      width:18px; height:18px;
+      background: radial-gradient(circle at 30% 30%, var(--pink3), var(--pink2) 55%, var(--pink1) 100%);
+      border-radius: 80% 20% 80% 20%;
+      opacity:.9;
+      filter: drop-shadow(0 10px 12px rgba(0,0,0,.08));
+      animation: fall linear infinite;
+    }
+    @keyframes fall{
+      0%{ transform: translateY(-60px) translateX(0px) rotate(0deg); opacity:0; }
+      10%{ opacity:.9; }
+      100%{ transform: translateY(110vh) translateX(90px) rotate(420deg); opacity:0; }
+    }
+
+    /* Flowers (bring them FORWARD + bigger) */
+    .flowers{ position:absolute; inset:0; pointer-events:none; z-index:5; }
+    .flower{
+      position:absolute;
+      width:160px; height:160px;
+      transform: rotate(var(--rot, 0deg)) scale(var(--s,1));
+      filter: drop-shadow(0 14px 18px rgba(0,0,0,.12));
+    }
+
+    .stem{
+      position:absolute;
+      left:50%; bottom:-92px;
+      width:12px; height:125px;
+      background: linear-gradient(var(--leaf1), #47b980);
+      border-radius:20px;
+      transform: translateX(-50%) rotate(var(--stemrot, -6deg));
+    }
+    .leaf{
+      position:absolute;
+      width:44px; height:22px;
+      background: linear-gradient(135deg, var(--leaf1), var(--leaf2));
+      border-radius: 22px 22px 22px 0;
+      transform: rotate(-22deg);
+      left:55%; bottom:-30px;
+      opacity:.95;
+    }
+    .leaf.two{ left:18%; bottom:-12px; transform: rotate(160deg); }
+
+    .petal2{
+      position:absolute;
+      width:70px; height:95px;
+      background: radial-gradient(circle at 30% 25%, var(--pink3), var(--pink2) 55%, var(--pink1) 100%);
+      border-radius: 60% 60% 60% 60%;
+      left:50%; top:28%;
+      transform-origin: 50% 88%;
+      box-shadow: inset 0 -12px 20px rgba(0,0,0,.08);
+    }
+    .p1{ transform: translate(-50%,-50%) rotate(0deg); }
+    .p2{ transform: translate(-50%,-50%) rotate(60deg); }
+    .p3{ transform: translate(-50%,-50%) rotate(120deg); }
+    .p4{ transform: translate(-50%,-50%) rotate(180deg); }
+    .p5{ transform: translate(-50%,-50%) rotate(240deg); }
+    .p6{ transform: translate(-50%,-50%) rotate(300deg); }
+
+    .center{
+      position:absolute;
+      width:44px; height:44px;
+      left:50%; top:40%;
+      transform: translate(-50%,-50%);
+      background: radial-gradient(circle at 30% 30%, #ffd5e6, #ff6fa6 55%, #ff2d86 100%);
+      border-radius:50%;
+      box-shadow: 0 12px 22px rgba(0,0,0,.12), inset 0 4px 10px rgba(255,255,255,.35);
+    }
+
+    /* Envelope */
+    .envelope-wrap{
+      position:relative;
+      width:min(520px, 86vw);
+      height:360px;
+      display:grid;
+      place-items:center;
+      z-index:10; /* above background, below hearts layer still okay */
+    }
+    .hint{
+      position:absolute;
+      top:-44px;
+      font-size:14px;
+      color: rgba(59,43,53,.75);
+      letter-spacing:.2px;
+      text-align:center;
+      width:100%;
+      user-select:none;
+      z-index:12;
+    }
+    .hint b{ color: rgba(214,31,60,.85); }
+
+    .envelope{
+      width:480px;
+      max-width:86vw;
+      height:300px;
+      position:relative;
+      cursor:pointer;
+      transform: translateY(12px);
+      transition: transform .25s ease;
+      outline:none;
+      z-index:11;
+    }
+    .envelope:active{ transform: translateY(16px) scale(.995); }
+
+    .env-back{
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, var(--red), var(--red2));
+      border-radius: 18px;
+      box-shadow: 0 28px 40px rgba(0,0,0,.18);
+      overflow:hidden;
+    }
+    .env-front{
+      position:absolute; inset:0;
+      border-radius: 18px;
+      overflow:hidden;
+      pointer-events:none;
+    }
+    .tri-left, .tri-right{
+      position:absolute; top:0; bottom:0;
+      width:50%;
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.06));
+      clip-path: polygon(0 0, 100% 50%, 0 100%);
+      opacity:.9;
+    }
+    .tri-left{ left:0; transform: scaleX(-1); }
+    .tri-right{ right:0; }
+    .tri-bottom{
+      position:absolute; left:0; right:0; bottom:0;
+      height:58%;
+      background: linear-gradient(180deg, rgba(0,0,0,.06), rgba(255,255,255,.06));
+      clip-path: polygon(0 0, 50% 70%, 100% 0, 100% 100%, 0 100%);
+      opacity:.95;
+    }
+    .seal{
+      position:absolute;
+      left:50%; top:62%;
+      transform: translate(-50%,-50%);
+      width:58px; height:58px;
+      background: radial-gradient(circle at 30% 30%, #ff9cb7, #ff3a67 60%, #b0162f 100%);
+      border-radius:50%;
+      box-shadow: 0 10px 20px rgba(0,0,0,.22), inset 0 5px 10px rgba(255,255,255,.25);
+      display:grid;
+      place-items:center;
+      z-index:2;
+    }
+    .seal::before{
+      content:"❤";
+      color: rgba(255,255,255,.92);
+      font-size:24px;
+      transform: translateY(-1px);
+      text-shadow: 0 4px 10px rgba(0,0,0,.18);
+    }
+
+    /* Address text + glow on her name */
+    .address{
+    position:absolute;
+    width:100%;
+    text-align:center;
+    top:26%;                 /* moved up so it won’t be covered */
+    z-index:6;               /* higher than the flap (flap is z-index:4) */
+    color: rgba(255,255,255,.92);
+    font-weight:900;
+    letter-spacing:.2px;
+    text-shadow: 0 4px 12px rgba(0,0,0,.25);
+    padding:0 18px;
+    line-height:1.35;
+    user-select:none;
+    pointer-events:none;     /* so clicks still open the envelope normally */
+    }
+    .address .to{
+      display:inline-block;
+      font-size:15px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.12);
+      backdrop-filter: blur(6px);
+    }
+    .address .to .name{
+      animation: glowName 2.1s ease-in-out infinite;
+    }
+    @keyframes glowName{
+      0%,100%{
+        text-shadow:
+          0 0 10px rgba(255,255,255,.35),
+          0 0 18px rgba(255,79,151,.30),
+          0 0 26px rgba(255,79,151,.18);
+      }
+      50%{
+        text-shadow:
+          0 0 18px rgba(255,255,255,.45),
+          0 0 34px rgba(255,79,151,.42),
+          0 0 46px rgba(255,79,151,.26);
+      }
+    }
+    .address .from{
+      display:block;
+      margin-top:10px;
+      font-size:13.5px;
+      opacity:.95;
+    }
+    .open .address{
+    opacity: 0;
+    visibility: hidden;
+    }
+
+    /* flap + letter */
+    .flap{
+      position:absolute;
+      left:0; right:0; top:0;
+      height:62%;
+      background: linear-gradient(180deg, #ff3a67, #b0162f);
+      clip-path: polygon(0 0, 100% 0, 50% 85%);
+      transform-origin: top;
+      transform: rotateX(0deg);
+      transition: transform .65s cubic-bezier(.2,.8,.2,1);
+      border-top-left-radius:18px;
+      border-top-right-radius:18px;
+      z-index:4;
+      box-shadow: inset 0 -10px 18px rgba(0,0,0,.20);
+    }
+
+    .letter{
+      position:absolute;
+      width:92%;
+      height:88%;
+      left:4%;
+      bottom:8%;
+      background: linear-gradient(180deg, var(--paper), #fff);
+      border-radius:14px;
+      box-shadow: 0 18px 30px rgba(0,0,0,.14);
+      transform: translateY(70px);
+      transition: transform .75s cubic-bezier(.2,.8,.2,1);
+      z-index:3;
+      overflow:hidden;
+      padding:18px 18px 12px 18px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+
+      /* IMPORTANT: fully hidden/disabled when closed */
+      opacity:0;
+      pointer-events:none;
+      visibility:hidden;
+    }
+
+    .letter .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding-bottom:10px;
+      border-bottom: 1px dashed rgba(214,31,60,.28);
+    }
+    .badge{
+      font-size:13px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,79,151,.12);
+      color: rgba(214,31,60,.9);
+      font-weight:700;
+      letter-spacing:.2px;
+    }
+    .closebtn{
+      border:none;
+      background: rgba(214,31,60,.10);
+      color: rgba(214,31,60,.9);
+      font-weight:800;
+      padding:8px 12px;
+      border-radius:10px;
+      cursor:pointer;
+    }
+    .closebtn:hover{ background: rgba(214,31,60,.16); }
+    .msg{
+      white-space:pre-wrap;
+      font-size:14.5px;
+      line-height:1.45;
+      color: var(--ink);
+      overflow:auto;
+      padding-right:6px;
+    }
+
+    .open .flap{ transform: rotateX(180deg); }
+    .open .letter{
+      transform: translateY(-34px);
+      opacity:1;
+      visibility:visible;
+      pointer-events:auto;
+    }
+
+    /* small hearts around envelope */
+    .env-hearts{
+      position:absolute;
+      inset:-20px;
+      pointer-events:none;
+      z-index:2;
+      opacity:.95;
+    }
+    .env-hearts span{
+      position:absolute;
+      font-size:18px;
+      color: rgba(255,79,151,.65);
+      animation: bob 2.8s ease-in-out infinite;
+      filter: drop-shadow(0 8px 10px rgba(0,0,0,.10));
+    }
+    @keyframes bob{
+      0%,100%{ transform: translateY(0); opacity:.65; }
+      50%{ transform: translateY(-10px); opacity:.95; }
+    }
+
+    @media (max-width:520px){
+      .letter{ padding:14px; }
+      .msg{ font-size:14px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sparkles"></div>
+
+  <!-- Music UI -->
+  <div class="music">
+    <button id="musicBtn" type="button">Play Music 🎶</button>
+    <small id="musicNote">Tap once to allow audio</small>
+  </div>
+
+  <!-- Falling petals -->
+  <div class="petals" id="petals"></div>
+
+  <div class="scene">
+    <!-- floating hearts -->
+    <div class="hearts" id="hearts"></div>
+
+    <!-- flowers -->
+    <div class="flowers" aria-hidden="true">
+      <!-- Bigger + moved around center so they’re visible -->
+      <div class="flower" style="left:2%; top:4%; --s:1.05; --rot:-10deg; --stemrot:-10deg;">
+        <div class="petal2 p1"></div><div class="petal2 p2"></div><div class="petal2 p3"></div>
+        <div class="petal2 p4"></div><div class="petal2 p5"></div><div class="petal2 p6"></div>
+        <div class="center"></div>
+        <div class="stem"></div><div class="leaf"></div><div class="leaf two"></div>
+      </div>
+
+      <div class="flower" style="left:6%; top:62%; --s:1.15; --rot:8deg; --stemrot:6deg;">
+        <div class="petal2 p1"></div><div class="petal2 p2"></div><div class="petal2 p3"></div>
+        <div class="petal2 p4"></div><div class="petal2 p5"></div><div class="petal2 p6"></div>
+        <div class="center"></div>
+        <div class="stem"></div><div class="leaf"></div><div class="leaf two"></div>
+      </div>
+
+      <div class="flower" style="right:2%; top:4%; --s:1.15; --rot:14deg; --stemrot:-8deg;">
+        <div class="petal2 p1"></div><div class="petal2 p2"></div><div class="petal2 p3"></div>
+        <div class="petal2 p4"></div><div class="petal2 p5"></div><div class="petal2 p6"></div>
+        <div class="center"></div>
+        <div class="stem"></div><div class="leaf"></div><div class="leaf two"></div>
+      </div>
+
+      <div class="flower" style="right:6%; top:62%; --s:1.05; --rot:-6deg; --stemrot:10deg;">
+        <div class="petal2 p1"></div><div class="petal2 p2"></div><div class="petal2 p3"></div>
+        <div class="petal2 p4"></div><div class="petal2 p5"></div><div class="petal2 p6"></div>
+        <div class="center"></div>
+        <div class="stem"></div><div class="leaf"></div><div class="leaf two"></div>
+      </div>
+    </div>
+
+    <!-- envelope + letter -->
+    <div class="envelope-wrap">
+      <div class="hint">Click the <b>red letter</b> to open 💌</div>
+
+      <div class="envelope" id="envelope" role="button" aria-label="Open the letter" tabindex="0">
+        <div class="env-hearts" aria-hidden="true">
+          <span style="left:8%; top:20%; animation-delay:.1s;">❤</span>
+          <span style="left:18%; top:8%; animation-delay:.6s;">❤</span>
+          <span style="left:78%; top:12%; animation-delay:.3s;">❤</span>
+          <span style="left:88%; top:26%; animation-delay:.9s;">❤</span>
+          <span style="left:84%; top:70%; animation-delay:.2s;">❤</span>
+          <span style="left:12%; top:72%; animation-delay:.8s;">❤</span>
+        </div>
+
+        <div class="env-back"></div>
+
+        <!-- Address -->
+        <div class="address">
+          <span class="to">To: <span class="name">Arabella B. Atabelo</span> 💗</span>
+          <span class="from">From: Mark Joseph T. Galang</span>
+        </div>
+
+        <!-- Letter (hidden unless open) -->
+        <div class="letter" id="letter">
+          <div class="topbar">
+            <div class="badge">For you 💗</div>
+            <button class="closebtn" id="closeBtn" type="button">Close</button>
+          </div>
+
+          <div class="msg">
+Dear baliii,
+
+Happy Valentine's Day po mahal ko! 🥹💙💘 I hope you are doing well po mahal ko 🥹💙 I just wanted to say that I appreciate you super very muchhh talaga po mahal ko hehe 🥹 I appreciate all the things that you have done for me po mahal ko and all the things that you have worked hard for po mahal ko 🥹💙 I want to keep loving you po mahal ko kasi want jud taka maging future wifey po mahal ko kasi alam ko talaga na kapag nandyan ka sa tabi ko kay makakaya ko talaga ang lahat po 🥹💙 I want to appreciate you po mahal ko and the way you care about me, the way you think about me, the way you talk and chika to me, the way you try nga makabawi sa akoa po, and the way you love me po mahal ko 🥹💙 I am soooo lucky that I have you as my girflriend and I am so happy that I am your boyfriend po 🥹💙 so please mahal ko have confidence po mahal ko kasi super pretty cutieee naman jud kaayo ka po 🥹💙 you are enough and worth it jud kaayo mahal ko 🥹💙 remember po mahal ko nga kakampi ra jud ko nimo po you've got my love and support po alwayssss 🥹💙💘 ILOVEYOUUUU PO ALWAYSSS SUPER SO MUCHHHH MY SUPER PRETTY CUTIEEEE, UNDERSTANDING, LOVING, CARING, PATIENT, HARDWORKING, AND THE MOST WIFEY MATERIAL AND MOST BEAUTIFUL PERSON THAT I HAVE EVER MET IN MY LIFE 🥹💙 sorry po kay wala koy mahatag nga flowers karong valentines po huhu pero I hope nga happy na ka ani po mahal ko 🥹💙 HAPPY VALENTINE'S DAY PO ULIT MY PALAGIII HEHE THANK YOU JUD SA TANAN PO 🥹💙
+
+Lovingly,
+Jao, your baliii and future husband 💙🤍
+          </div>
+        </div>
+
+        <div class="env-front" aria-hidden="true">
+          <div class="tri-left"></div>
+          <div class="tri-right"></div>
+          <div class="tri-bottom"></div>
+          <div class="seal"></div>
+          <div class="flap"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Music (put music.mp3 in same folder) -->
+  <audio id="bgm" loop preload="auto">
+    <source src="music.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    /* Envelope open/close */
+    const env = document.getElementById("envelope");
+    const closeBtn = document.getElementById("closeBtn");
+    const bgm = document.getElementById("bgm");
+    const musicBtn = document.getElementById("musicBtn");
+    const musicNote = document.getElementById("musicNote");
+
+    function toggleOpen(force){
+      if (typeof force === "boolean") env.classList.toggle("open", force);
+      else env.classList.toggle("open");
+    }
+
+    env.addEventListener("click", (e) => {
+      if (e.target === closeBtn) return;
+      toggleOpen();
+      burstHearts();
+    });
+
+    closeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleOpen(false);
+    });
+
+    env.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleOpen(); burstHearts(); }
+      if (e.key === "Escape") toggleOpen(false);
+    });
+
+    /* Floating hearts */
+    const hearts = document.getElementById("hearts");
+    function spawnHeart() {
+      const h = document.createElement("div");
+      h.className = "heart";
+
+      const left = Math.random() * 100;
+      const size = 10 + Math.random() * 16;
+      const duration = 4 + Math.random() * 5;
+      const delay = Math.random() * 1.2;
+      const opacity = 0.45 + Math.random() * 0.45;
+
+      h.style.left = left + "%";
+      h.style.bottom = (-20 - Math.random()*40) + "px";
+      h.style.width = size + "px";
+      h.style.height = size + "px";
+      h.style.animationDuration = duration + "s";
+      h.style.animationDelay = delay + "s";
+      h.style.opacity = opacity;
+
+      const pinks = [
+        "rgba(255,79,151,.75)",
+        "rgba(255,111,166,.75)",
+        "rgba(255,155,195,.70)",
+        "rgba(255,89,171,.72)"
+      ];
+      const c = pinks[Math.floor(Math.random() * pinks.length)];
+      h.style.background = c;
+
+      const style = document.createElement("style");
+      const id = "h" + Math.random().toString(16).slice(2);
+      h.id = id;
+      style.textContent = `#${id}::before, #${id}::after { background: ${c}; }`;
+      document.head.appendChild(style);
+
+      hearts.appendChild(h);
+      setTimeout(() => { h.remove(); style.remove(); }, (duration + delay) * 1000 + 200);
+    }
+    for (let i = 0; i < 18; i++) spawnHeart();
+    setInterval(spawnHeart, 260);
+
+    function burstHearts(){
+      for (let i = 0; i < 16; i++) setTimeout(spawnHeart, i * 35);
+    }
+
+    /* Falling petals */
+    const petals = document.getElementById("petals");
+    function spawnPetal(){
+      const p = document.createElement("div");
+      p.className = "petal";
+      const left = Math.random() * 100;
+      const size = 10 + Math.random() * 18;
+      const duration = 6 + Math.random() * 6;
+      const delay = Math.random() * 1.2;
+      p.style.left = left + "vw";
+      p.style.top = (-30 - Math.random()*60) + "px";
+      p.style.width = size + "px";
+      p.style.height = size + "px";
+      p.style.animationDuration = duration + "s";
+      p.style.animationDelay = delay + "s";
+      p.style.opacity = (0.45 + Math.random()*0.55).toFixed(2);
+      petals.appendChild(p);
+      setTimeout(() => p.remove(), (duration + delay) * 1000 + 400);
+    }
+    for(let i=0;i<18;i++) spawnPetal();
+    setInterval(spawnPetal, 320);
+
+    /* Music: toggle play/pause (requires user gesture) */
+    async function playMusic(){
+      try{
+        await bgm.play();
+        musicBtn.textContent = "Pause Music 🎶";
+        musicNote.textContent = "Playing";
+      }catch(e){
+        musicNote.textContent = "Add music.mp3 in the folder";
+      }
+    }
+    function pauseMusic(){
+      bgm.pause();
+      musicBtn.textContent = "Play Music 🎶";
+      musicNote.textContent = "Tap once to allow audio";
+    }
+    musicBtn.addEventListener("click", async () => {
+      if (!bgm.paused) pauseMusic();
+      else await playMusic();
+    });
+  </script>
+</body>
+</html>
